@@ -6,13 +6,14 @@ This package provides theorem-like environments for academic writing in [Typst](
 - Two visual styles are available through `theme.style`: `"minimal"` (inline header) and `"box"` (highlighted frame with colored border and background).
 - The theme color is fully customizable, affecting titles, borders, background, and reference links. 
 - Theorem-like environments are classified into two distinct styles. Framed blocks — rendered with a highlighted border and background — include `Definition`, `Property`, `Axiom`, `Postulate`, `Assumption`, `Hypothesis`, `Conjecture`, `Proposition`, `Lemma`, `Theorem`, `Corollary`, `Remark`, and `Note`. Plain blocks — rendered without a frame — include `Proof`, `Example`, `Exercise`, `Problem`, `Solution`, and `Conclusion`. All environments support automatic numbering and multi-language localization.
+- Html export is supported.
 
 ## Basic Usage
 
 To use, simply import the package and add a show rule:
 
 ```typst
-#import "@preview/theoframe:0.3.0": *
+#import "@preview/theoframe:0.3.5": *
 #show: theoframe-setup
 ```
 
@@ -30,7 +31,7 @@ The `#show: theoframe-setup` rule accepts a `theme` argument to customize the ap
 
 ## style:"minimal"
 ```typst
-#import "@preview/theoframe:0.3.0":*
+#import "@preview/theoframe:0.3.5":*
 #show: theoframe-setup
 // #show: theoframe-setup.with(theme: (style: "box", color: rgb("#067300")))
 
@@ -96,7 +97,7 @@ To further illustrate the concepts introduced above, we provide a concrete examp
 ## style:"box"
 
 ```typst
-#import "@preview/theoframe:0.3.0":*
+#import "@preview/theoframe:0.3.5":*
 // #show: theoframe-setup
 #show: theoframe-setup.with(theme: (style: "box", color: rgb("#067300")))
 ```
