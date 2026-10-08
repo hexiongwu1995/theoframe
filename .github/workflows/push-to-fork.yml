@@ -1,0 +1,94 @@
+name: Publish to typst/packages
+
+# 推送以 v 开头的 tag 时触发（去掉 v 后需与 typst.toml 中的 version 一致）
+# 例：git tag v0.4.3 && git push origin v0.4.3
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout this repository
+        uses: actions/checkout@v4
+
+      - name: Verify tag matches package version
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          TOML_VERSION=$(grep -m1 '^version' typst.toml | sed -E 's/version\s*=\s*"([^"]+)".*/\1/')
+          echo "Tag: ${TAG}, typst.toml: ${TOML_VERSION}"
+          if [ "${TAG}" != "${TOML_VERSION}" ]; then
+            echo "::error::Tag (${TAG}) does not match version in typst.toml (${TOML_VERSION})."
+            exit 1
+          fi
+          echo "VERSION=${TAG}" >> "$GITHUB_ENV"
+
+      - name: Sync fork with upstream typst/packages
+        env:
+          GH_TOKEN: ${{ secrets.PACKAGES_PAT }}
+        run: gh repo sync hexiongwu1995/packages --branch main
+
+      - name: Checkout fork of typst/packages
+        uses: actions/checkout@v4
+        with:
+          repository: hexiongwu1995/packages
+          token: ${{ secrets.PACKAGES_PAT }}
+          path: packages
+
+      - name: Copy package files into fork
+        run: |
+          DEST="packages/packages/preview/theoframe/${VERSION}"
+          if [ -d "${DEST}" ]; then
+            echo "::error::packages/preview/theoframe/${VERSION} already exists in typst/packages."
+            exit 1
+          fi
+          mkdir -p "${DEST}"
+          rsync -av \
+            --exclude='.git/' \
+            --exclude='.github/' \
+            --exclude='.gitignore' \
+            --exclude='*.pdf' \
+            ./ "${DEST}/"
+
+      - name: Commit and push to fork
+        working-directory: packages
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "theoframe-${VERSION}"
+          git add "packages/preview/theoframe/${VERSION}"
+          git commit -m "theoframe: ${VERSION}"
+          git push -u origin "theoframe-${VERSION}"
+
+      # - name: Create pull request to typst/packages
+      #   working-directory: packages
+      #   env:
+      #     GH_TOKEN: ${{ secrets.PACKAGES_PAT }}
+      #   run: |
+      #     gh pr create \
+      #       --repo typst/packages \
+      #       --base main \
+      #       --head "hexiongwu1995:theoframe-${VERSION}" \
+      #       --title "theoframe:${VERSION}" \
+      #       --body "$(cat <<'EOF'
+      #     I am submitting
+      #     - [ ] a new package
+      #     - [x] an update for a package
+
+      #     Description: A theorem environment package for Typst.
+
+      #     These are the changes from the previous release: https://github.com/hexiongwu1995/typst-theoframe/releases
+
+      #     <!--
+      #     The following are required for a package to be accepted:
+      #     - The package name is unique
+      #     - The package contains a `typst.toml` file with the `package` table
+      #     - The package has an entrypoint and compiles
+      #     -->
+      #     EOF
+      #     )"
