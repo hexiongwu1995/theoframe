@@ -39,6 +39,9 @@ jobs:
           repository: hexiongwu1995/packages
           token: ${{ secrets.PACKAGES_PAT }}
           path: packages
+          # 只稀疏检出 theoframe 目录，避免拉取整个庞大的仓库
+          sparse-checkout: |
+            packages/preview/theoframe/
 
       - name: Copy package files into fork
         run: |
@@ -53,6 +56,7 @@ jobs:
             --exclude='.github/' \
             --exclude='.gitignore' \
             --exclude='*.pdf' \
+            --exclude='commands.md' \
             ./ "${DEST}/"
 
       - name: Commit and push to fork
