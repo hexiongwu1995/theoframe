@@ -33,15 +33,21 @@ jobs:
           GH_TOKEN: ${{ secrets.PACKAGES_PAT }}
         run: gh repo sync hexiongwu1995/packages --branch main
 
-      - name: Checkout fork of typst/packages
-        uses: actions/checkout@v4
-        with:
-          repository: hexiongwu1995/packages
-          token: ${{ secrets.PACKAGES_PAT }}
-          path: packages
-          # 只稀疏检出 theoframe 目录，避免拉取整个庞大的仓库
-          sparse-checkout: |
-            packages/preview/theoframe/
+      # 手动稀疏克隆 fork（方式参考 publish-package-guidance.md）：
+      # --depth 1 只取最新提交；--filter="tree:0" 不下载目录树和文件内容，
+      # 配合稀疏检出按需下载，避免拉取整个庞大的仓库。
+      # 注意：actions/checkout 的 sparse-checkout 只影响工作区检出，
+      # 抓取时仍会下载整个 HEAD 快照，因此这里改为手动 git 命令。
+      - name: Checkout fork of typst/packages (sparse)
+        env:
+          GH_TOKEN: ${{ secrets.PACKAGES_PAT }}
+        run: |
+          git clone --depth 1 --no-checkout --filter="tree:0" \
+            "https://x-access-token:${GH_TOKEN}@github.com/hexiongwu1995/packages.git" packages
+          cd packages
+          git sparse-checkout init
+          git sparse-checkout set packages/preview/theoframe/
+          git checkout main
 
       - name: Copy package files into fork
         run: |
@@ -57,6 +63,7 @@ jobs:
             --exclude='.gitignore' \
             --exclude='*.pdf' \
             --exclude='commands.md' \
+            --exclude='publish-package-guidance.md' \
             ./ "${DEST}/"
 
       - name: Commit and push to fork
