@@ -1,4 +1,4 @@
-name: Publish to typst/packages
+name: Publish to fork
 
 # 推送以 v 开头的 tag 时触发（去掉 v 后需与 typst.toml 中的 version 一致）
 # 例：git tag v0.4.3 && git push origin v0.4.3
@@ -92,3 +92,19 @@ jobs:
       #     -->
       #     EOF
       #     )"
+
+  # 在当前仓库创建 GitHub Release（附带自动生成的更新说明）
+  release:
+    needs: publish
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${GITHUB_REF_NAME}" \
+            --repo "${GITHUB_REPOSITORY}" \
+            --title "theoframe ${GITHUB_REF_NAME}" \
+            --generate-notes
