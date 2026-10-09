@@ -36,7 +36,7 @@
 
 #let fig-number(kind, loc) = context {
   let f-counter = counter(figure.where(kind: kind)).at(loc)
-  numbering("1.", ..f-counter)
+  numbering("1", ..f-counter)
 }
 
 
