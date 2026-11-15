@@ -48,7 +48,7 @@
     if (target() == "html" or target() == "bundle") {
       html.elem("div", attrs: (
         class: "thmbox",
-        style: "border-radius: 10px; background:#f5f5f5; padding: 0.8em;",
+        style: "border-radius: 10px; background: rgba(230, 230, 230, 0.3); padding: 0.8em;",
       ))[
         #strong()[#trans-supplement] #fig-number(kind, here()) #str(
           "  ",
@@ -222,7 +222,7 @@
     if (target() == "html" or target() == "bundle") {
       html.elem("div", attrs: (
         class: "thmplain",
-        style: "border-radius: 10px; background: #f5f5f5; padding: 0.8em;",
+        style: "border-radius: 10px; background: rgba(230, 230, 230, 0.3); padding: 0.8em;",
       ))[
         #strong()[#trans-supplement] #fig-number(kind, here()) #str("  ")
         #name #linebreak()
