@@ -7,7 +7,7 @@ This package provides theorem-like environments for academic writing in [Typst](
 ## Basic Usage
 
 ```typst
-#import "@preview/theoframe:0.4.2": *
+#import "@preview/theoframe:0.4.5": *
 #show: theoframe-setup
 ```
 
@@ -22,7 +22,7 @@ This package provides theorem-like environments for academic writing in [Typst](
 
 ## Default style:"minimal"
 ```typst
-#import "@preview/theoframe:0.4.2":*
+#import "@preview/theoframe:0.4.5":*
 // #show: theoframe-setup
 #show: theoframe-setup.with(theme: (style: "minimal", color: rgb("#067300")))
 
