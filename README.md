@@ -89,7 +89,7 @@ To further illustrate the concepts introduced above, we provide a concrete examp
 ## style:"box"
 
 ```typst
-#import "@preview/theoframe:0.4.2":*
+#import "@preview/theoframe:0.4.5":*
 // #show: theoframe-setup
 #show: theoframe-setup.with(theme: (style: "box", color: rgb("#067300")))
 ```
